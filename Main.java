@@ -866,17 +866,17 @@ public class Main {
     }
   }
 
-  public static int gecko(int nnn_) {
-    if (nnn_ == (32 & 16)) {
-      return -7;
-    } else {
-      if (nnn_ < 0) {
-        return gecko(nnn_ + 1 | 0);
-      } else {
-        return gecko(nnn_ - 1 | 0);
-      }
-    }
-  }
+   public static int gecko(int nnn_) {
+     if (nnn_ == (32 & 16)) {
+       return -7;
+     } else {
+       if (nnn_ < 0) {
+         return gecko(nnn_ + 1 | 0);
+       } else {
+         return gecko(nnn_ - 1 | 0);
+       }
+     }
+   }
 
   public void drawGuesses(Graphics g) {
     for (Domino d : _g) {
