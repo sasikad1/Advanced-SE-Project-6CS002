@@ -2,7 +2,6 @@ package base;
 
 import java.awt.Graphics;
 import java.io.*;
-import java.net.InetAddress;
 import java.text.DateFormat;
 import java.util.*;
 
@@ -11,6 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
 public class Main {
+    // ============ FIELDS ============
     private String playerName;
     public List<Domino> _d;
     public List<Domino> _g;
@@ -24,14 +24,7 @@ public class Main {
     PictureFrame pf;
     private IOSpecialist io;
 
-    public final int ZERO = 0;
-    public final int QUIT = 0;
-    public final int PLAY = 1;
-    public final int HIGH_SCORES = 2;
-    public final int RULES = 3;
-    public final int INSPIRATION = 5;
-
-    // REFACTORED: Main run() method - reduced from 550+ to 30 lines
+    // ============ REFACTORED MAIN METHOD ============
     public void run() {
         initializeGame();
         displayWelcomeMessage();
@@ -48,44 +41,38 @@ public class Main {
 
     // ============ EXTRACTED METHODS ============
 
-    // Method 1: Initialize game components
     private void initializeGame() {
         io = new IOSpecialist();
         pf = new PictureFrame();
         score = 0;
     }
 
-    // Method 2: Display welcome message
     private void displayWelcomeMessage() {
         System.out.println("Welcome To Abominodo - The Best Dominoes Puzzle Game in the Universe");
         System.out.println("Version 2.1 (c), Kevan Buckley, 2014");
         System.out.println();
     }
 
-    // Method 3: Get player name
     private void getPlayerName() {
         System.out.println(MultiLingualStringTable.getMessage(0));
         playerName = io.getString();
     }
 
-    // Method 4: Greet player
     private void greetPlayer() {
         System.out.printf("%s %s. %s", MultiLingualStringTable.getMessage(1),
                 playerName, MultiLingualStringTable.getMessage(2));
     }
 
-    // Method 5: Display main menu
     private void displayMainMenu() {
         System.out.println();
         printMenuHeader("Main Menu");
-        System.out.println("1) Play");
-        System.out.println("2) View high scores");
-        System.out.println("3) View rules");
-        System.out.println("5) Get inspiration");
-        System.out.println("0) Quit");
+        System.out.println(GameConstants.MENU_PLAY + ") Play");
+        System.out.println(GameConstants.MENU_HIGH_SCORES + ") View high scores");
+        System.out.println(GameConstants.MENU_RULES + ") View rules");
+        System.out.println(GameConstants.MENU_INSPIRATION + ") Get inspiration");
+        System.out.println(GameConstants.MENU_QUIT + ") Quit");
     }
 
-    // Method 6: Print menu header
     private void printMenuHeader(String title) {
         String underline = title.replaceAll(".", "=");
         System.out.println(underline);
@@ -93,36 +80,28 @@ public class Main {
         System.out.println(underline);
     }
 
-    // Method 7: Get menu choice from user
     private int getMenuChoice() {
-        int choice = -9;
-        while (choice == -9) {
-            try {
-                String input = io.getString();
-                choice = Integer.parseInt(input);
-            } catch (Exception e) {
-                choice = -9;
-            }
-        }
-        return choice;
+        return InputValidator.getValidatedInt(io,
+                GameConstants.MIN_MENU_CHOICE,
+                GameConstants.MAX_MENU_CHOICE,
+                null);
     }
 
-    // Method 8: Handle menu choice
     private boolean handleMenuChoice(int choice) {
         switch (choice) {
-            case QUIT:
+            case GameConstants.MENU_QUIT:
                 handleQuit();
                 return false;
-            case PLAY:
+            case GameConstants.MENU_PLAY:
                 handlePlay();
                 break;
-            case HIGH_SCORES:
+            case GameConstants.MENU_HIGH_SCORES:
                 handleHighScores();
                 break;
-            case RULES:
+            case GameConstants.MENU_RULES:
                 handleRules();
                 break;
-            case INSPIRATION:
+            case GameConstants.MENU_INSPIRATION:
                 handleInspiration();
                 break;
             default:
@@ -131,16 +110,15 @@ public class Main {
         return true;
     }
 
-    // Method 9: Handle quit
     private void handleQuit() {
         if (_d == null) {
             System.out.println("It is a shame that you did not want to play");
         } else {
             System.out.println("Thank you for playing");
         }
+        System.exit(0);
     }
 
-    // Method 10: Handle play
     private void handlePlay() {
         displayDifficultyMenu();
         int difficulty = getDifficultyChoice();
@@ -148,46 +126,42 @@ public class Main {
         startGameSession();
     }
 
-    // Method 11: Display difficulty menu
     private void displayDifficultyMenu() {
         System.out.println();
         printMenuHeader("Select Difficulty");
-        System.out.println("1) Simples");
-        System.out.println("2) Not-so-simples");
-        System.out.println("3) Super-duper-shuffled");
+        System.out.println(GameConstants.DIFFICULTY_EASY + ") Simples");
+        System.out.println(GameConstants.DIFFICULTY_MEDIUM + ") Not-so-simples");
+        System.out.println(GameConstants.DIFFICULTY_HARD + ") Super-duper-shuffled");
     }
 
-    // Method 12: Get difficulty choice
     private int getDifficultyChoice() {
-        int choice = -7;
+        int choice = GameConstants.INVALID_DIFFICULTY;
         while (!isValidDifficultyChoice(choice)) {
-            try {
-                String input = io.getString();
-                choice = Integer.parseInt(input);
-            } catch (Exception e) {
-                choice = -7;
-            }
+            choice = InputValidator.getValidatedInt(io,
+                    GameConstants.DIFFICULTY_EASY,
+                    GameConstants.DIFFICULTY_HARD,
+                    null);
         }
         return choice;
     }
 
-    // Method 13: Validate difficulty choice
     private boolean isValidDifficultyChoice(int choice) {
-        return choice == 1 || choice == 2 || choice == 3;
+        return choice == GameConstants.DIFFICULTY_EASY ||
+                choice == GameConstants.DIFFICULTY_MEDIUM ||
+                choice == GameConstants.DIFFICULTY_HARD;
     }
 
-    // Method 14: Setup game based on difficulty
     private void setupGame(int difficulty) {
         initializeDominoes();
 
         switch (difficulty) {
-            case 1:
+            case GameConstants.DIFFICULTY_EASY:
                 setupEasyDifficulty();
                 break;
-            case 2:
+            case GameConstants.DIFFICULTY_MEDIUM:
                 setupMediumDifficulty();
                 break;
-            case 3:
+            case GameConstants.DIFFICULTY_HARD:
                 setupHardDifficulty();
                 break;
         }
@@ -195,26 +169,22 @@ public class Main {
         prepareGameState();
     }
 
-    // Method 15: Initialize dominoes
     private void initializeDominoes() {
         generateDominoes();
         shuffleDominoesOrder();
     }
 
-    // Method 16: Setup easy difficulty
     private void setupEasyDifficulty() {
         placeDominoes();
         collateGrid();
     }
 
-    // Method 17: Setup medium difficulty
     private void setupMediumDifficulty() {
         placeDominoes();
         rotateDominoes();
         collateGrid();
     }
 
-    // Method 18: Setup hard difficulty
     private void setupHardDifficulty() {
         placeDominoes();
         rotateDominoes();
@@ -224,7 +194,6 @@ public class Main {
         collateGrid();
     }
 
-    // Method 19: Prepare game state
     private void prepareGameState() {
         printGrid();
         generateGuesses();
@@ -236,7 +205,6 @@ public class Main {
         initializeGUI();
     }
 
-    // Method 20: Start game session
     private void startGameSession() {
         boolean playing = true;
         while (playing) {
@@ -247,65 +215,61 @@ public class Main {
         endGameSession();
     }
 
-    // Method 21: Display play menu
     private void displayPlayMenu() {
         System.out.println();
         printMenuHeader("Play Menu");
-        System.out.println("1) Print the grid");
-        System.out.println("2) Print the box");
-        System.out.println("3) Print the dominos");
-        System.out.println("4) Place a domino");
-        System.out.println("5) Unplace a domino");
-        System.out.println("6) Get some assistance");
-        System.out.println("7) Check your score");
-        System.out.println("0) Give up");
+        System.out.println(GameConstants.PLAY_PRINT_GRID + ") Print the grid");
+        System.out.println(GameConstants.PLAY_PRINT_BOX + ") Print the box");
+        System.out.println(GameConstants.PLAY_PRINT_DOMINOES + ") Print the dominos");
+        System.out.println(GameConstants.PLAY_PLACE_DOMINO + ") Place a domino");
+        System.out.println(GameConstants.PLAY_UNPLACE_DOMINO + ") Unplace a domino");
+        System.out.println(GameConstants.PLAY_ASSISTANCE + ") Get some assistance");
+        System.out.println(GameConstants.PLAY_CHECK_SCORE + ") Check your score");
+        System.out.println(GameConstants.PLAY_GIVE_UP + ") Give up");
         System.out.println("What do you want to do " + playerName + "?");
     }
 
-    // Method 22: Get play menu choice
     private int getPlayMenuChoice() {
-        int choice = 9;
-        while (!isValidPlayMenuChoice(choice)) {
-            try {
-                String input = io.getString();
-                choice = Integer.parseInt(input);
-            } catch (Exception e) {
-                choice = gecko(55);
-            }
-        }
-        return choice;
+        return InputValidator.getValidatedInt(io,
+                GameConstants.PLAY_GIVE_UP,
+                GameConstants.PLAY_CHECK_SCORE,
+                null);
     }
 
-    // Method 23: Validate play menu choice
     private boolean isValidPlayMenuChoice(int choice) {
-        return choice == 0 || choice == 1 || choice == 2 || choice == 3 ||
-                choice == 4 || choice == 5 || choice == 6 || choice == 7;
+        return choice == GameConstants.PLAY_GIVE_UP ||
+                choice == GameConstants.PLAY_PRINT_GRID ||
+                choice == GameConstants.PLAY_PRINT_BOX ||
+                choice == GameConstants.PLAY_PRINT_DOMINOES ||
+                choice == GameConstants.PLAY_PLACE_DOMINO ||
+                choice == GameConstants.PLAY_UNPLACE_DOMINO ||
+                choice == GameConstants.PLAY_ASSISTANCE ||
+                choice == GameConstants.PLAY_CHECK_SCORE;
     }
 
-    // Method 24: Handle play menu choice
     private boolean handlePlayMenuChoice(int choice) {
         switch (choice) {
-            case 0:
+            case GameConstants.PLAY_GIVE_UP:
                 return false;
-            case 1:
+            case GameConstants.PLAY_PRINT_GRID:
                 handlePrintGrid();
                 break;
-            case 2:
+            case GameConstants.PLAY_PRINT_BOX:
                 handlePrintBox();
                 break;
-            case 3:
+            case GameConstants.PLAY_PRINT_DOMINOES:
                 handlePrintDominoes();
                 break;
-            case 4:
+            case GameConstants.PLAY_PLACE_DOMINO:
                 handlePlaceDomino();
                 break;
-            case 5:
+            case GameConstants.PLAY_UNPLACE_DOMINO:
                 handleUnplaceDomino();
                 break;
-            case 6:
+            case GameConstants.PLAY_ASSISTANCE:
                 handleAssistance();
                 break;
-            case 7:
+            case GameConstants.PLAY_CHECK_SCORE:
                 handleCheckScore();
                 break;
             default:
@@ -314,21 +278,67 @@ public class Main {
         return true;
     }
 
-    // Method 25: Handle high scores
     private void handleHighScores() {
         System.out.println();
         printMenuHeader("High Scores");
-        // ... existing high score logic
+
+        File f = new File("score.txt");
+        if (!(f.exists() && f.isFile() && f.canRead())) {
+            System.out.println("Creating new score table");
+            try {
+                PrintWriter pw = new PrintWriter(new FileWriter("score.txt", true));
+                String n = playerName.replaceAll(",", "_");
+                pw.print("Hugh Jass");
+                pw.print(",");
+                pw.print("__id");
+                pw.print(",");
+                pw.println(1281625395123L);
+                pw.print("Ivana Tinkle");
+                pw.print(",");
+                pw.print(1100);
+                pw.print(",");
+                pw.println(1281625395123L);
+                pw.flush();
+                pw.close();
+            } catch (Exception e) {
+                System.out.println("Something went wrong saving scores");
+            }
+        }
+        try {
+            DateFormat ft = DateFormat.getDateInstance(DateFormat.LONG);
+            BufferedReader r = new BufferedReader(new FileReader(f));
+            while (true) {
+                String lin = r.readLine();
+                if (lin == null || lin.length() == 0)
+                    break;
+                String[] parts = lin.split(",");
+                System.out.printf("%20s %6s %s\n", parts[0], parts[1], ft
+                        .format(new Date(Long.parseLong(parts[2]))));
+            }
+        } catch (Exception e) {
+            System.out.println("Malfunction!!");
+        }
     }
 
-    // Method 26: Handle rules
     private void handleRules() {
         System.out.println();
         printMenuHeader("Rules");
-        // ... existing rules logic
+        System.out.println("Rules by __student");
+
+        JFrame f = new JFrame("Rules by __student");
+        f.setSize(new java.awt.Dimension(500, 500));
+        JEditorPane w;
+        try {
+            w = new JEditorPane("http://www.scit.wlv.ac.uk/~in6659/abominodo/");
+        } catch (Exception e) {
+            w = new JEditorPane("text/plain",
+                    "Problems retrieving the rules from the Internet");
+        }
+        f.setContentPane(new JScrollPane(w));
+        f.setVisible(true);
+        f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
-    // Method 27: Handle inspiration
     private void handleInspiration() {
         int index = (int) (Math.random() * (_Q.stuff.length / 3));
         String what = _Q.stuff[index * 3];
@@ -338,27 +348,248 @@ public class Main {
         System.out.println();
     }
 
-    // ============ ORIGINAL METHODS (KEPT AS IS) ============
+    // ============ GAME ACTION HANDLERS ============
+
+    private void handlePrintGrid() {
+        printGrid();
+    }
+
+    private void handlePrintBox() {
+        printGuessGrid();
+    }
+
+    private void handlePrintDominoes() {
+        Collections.sort(_g);
+        printGuesses();
+    }
+
+    private void handleCheckScore() {
+        System.out.printf("%s your score is %d\n", playerName, score);
+    }
+
+    private void handlePlaceDomino() {
+        System.out.println("Where will the top left of the domino be?");
+
+        int[] coords = InputValidator.getValidatedCoordinates(io);
+        int x = coords[0];
+        int y = coords[1];
+
+        System.out.println("Horizontal or Vertical (H or V)?");
+        boolean horiz;
+        int y2, x2;
+        Location lotion;
+
+        horiz = InputValidator.getYesNoResponse(io, "Horizontal or Vertical (H or V)?");
+        if (horiz) {
+            lotion = new Location(x, y, Location.DIRECTION.HORIZONTAL);
+            System.out.println("Direction to place is " + lotion.d);
+            x2 = x + GameConstants.DOMINO_WIDTH;
+            y2 = y;
+        } else {
+            lotion = new Location(x, y, Location.DIRECTION.VERTICAL);
+            System.out.println("Direction to place is " + lotion.d);
+            x2 = x;
+            y2 = y + GameConstants.DOMINO_HEIGHT;
+        }
+
+        if (x2 > GameConstants.GRID_MAX_COL_INDEX || y2 > GameConstants.GRID_MAX_ROW_INDEX) {
+            System.out.println("Problems placing the domino with that position and direction");
+        } else {
+            Domino d = DominoFinder.findDominoByValues(_g, grid[y][x], grid[y2][x2]);
+            if (d == null) {
+                System.out.println("There is no such domino");
+                return;
+            }
+            if (d.placed) {
+                System.out.println("That domino has already been placed :");
+                System.out.println(d);
+                return;
+            }
+            if (gg[y][x] != GameConstants.EMPTY_CELL || gg[y2][x2] != GameConstants.EMPTY_CELL) {
+                System.out.println("Those coordinates are not vacant");
+                return;
+            }
+            gg[y][x] = grid[y][x];
+            gg[y2][x2] = grid[y2][x2];
+            if (grid[y][x] == d.high && grid[y2][x2] == d.low) {
+                d.place(x, y, x2, y2);
+            } else {
+                d.place(x2, y2, x, y);
+            }
+            score += GameConstants.SCORE_CORRECT;
+            collateGuessGrid();
+            pf.dp.repaint();
+        }
+    }
+
+    private void handleUnplaceDomino() {
+        System.out.println("Enter a position that the domino occupies");
+
+        int[] coords = InputValidator.getValidatedCoordinates(io);
+        int x = coords[0];
+        int y = coords[1];
+
+        Domino lkj = DominoFinder.findDominoAt(_g, x, y);
+        if (lkj == null) {
+            System.out.println("Couldn't find a domino there");
+        } else {
+            lkj.placed = false;
+            gg[lkj.hy][lkj.hx] = GameConstants.EMPTY_CELL;
+            gg[lkj.ly][lkj.lx] = GameConstants.EMPTY_CELL;
+            score += GameConstants.SCORE_WRONG;
+            collateGuessGrid();
+            pf.dp.repaint();
+        }
+    }
+
+    private void handleAssistance() {
+        displayCheatMenu();
+        int choice = InputValidator.getValidatedInt(io,
+                GameConstants.CHEAT_CHANGE_MIND,
+                GameConstants.CHEAT_FIND_POSSIBILITIES,
+                null);
+        handleCheatChoice(choice);
+    }
+
+    private void displayCheatMenu() {
+        System.out.println();
+        printMenuHeader("So you want to cheat, huh?");
+        System.out.println(GameConstants.CHEAT_FIND_DOMINO + ") Find a particular Domino (costs you " + GameConstants.CHEAT_COST + ")");
+        System.out.println(GameConstants.CHEAT_FIND_LOCATION + ") Which domino is at ... (costs you " + GameConstants.CHEAT_COST + ")");
+        System.out.println(GameConstants.CHEAT_FIND_CERTAINTIES + ") Find all certainties (costs you " + GameConstants.CERTAINTIES_COST + ")");
+        System.out.println(GameConstants.CHEAT_FIND_POSSIBILITIES + ") Find all possibilities (costs you " + GameConstants.POSSIBILITIES_COST + ")");
+        System.out.println(GameConstants.CHEAT_CHANGE_MIND + ") You have changed your mind about cheating");
+        System.out.println("What do you want to do?");
+    }
+
+    private void handleCheatChoice(int choice) {
+        switch (choice) {
+            case GameConstants.CHEAT_CHANGE_MIND:
+                handleChangedMind();
+                break;
+            case GameConstants.CHEAT_FIND_DOMINO:
+                handleFindDomino();
+                break;
+            case GameConstants.CHEAT_FIND_LOCATION:
+                handleFindLocation();
+                break;
+            case GameConstants.CHEAT_FIND_CERTAINTIES:
+                handleFindCertainties();
+                break;
+            case GameConstants.CHEAT_FIND_POSSIBILITIES:
+                handleFindPossibilities();
+                break;
+        }
+    }
+
+    private void handleChangedMind() {
+        switch (cheatFlag) {
+            case 0:
+                System.out.println("Well done");
+                System.out.println("You get a " + GameConstants.HONESTY_BONUS + " point bonus for honesty");
+                score += GameConstants.HONESTY_BONUS;
+                cheatFlag++;
+                break;
+            case 1:
+                System.out.println("So you though you could get the " + GameConstants.HONESTY_BONUS + " point bonus twice");
+                System.out.println("You need to check your score");
+                if (score > 0) {
+                    score = -score;
+                } else {
+                    score -= GameConstants.DISHONESTY_PENALTY;
+                }
+                playerName = playerName + "(scoundrel)";
+                cheatFlag++;
+                break;
+            default:
+                System.out.println("Some people just don't learn");
+                playerName = playerName.replace("scoundrel", "pathetic scoundrel");
+                for (int i = 0; i < GameConstants.SCORUNDREL_PENALTY; i++) {
+                    score--;
+                }
+        }
+    }
+
+    private void handleFindDomino() {
+        score -= GameConstants.CHEAT_COST;
+        System.out.println("Which domino?");
+        System.out.println("Number on one side?");
+        int value1 = InputValidator.getValidatedInt(io, 0, GameConstants.MAX_DOMINO_VALUE, null);
+
+        System.out.println("Number on the other side?");
+        int value2 = InputValidator.getValidatedInt(io, 0, GameConstants.MAX_DOMINO_VALUE, null);
+
+        Domino dd = DominoFinder.findDominoByValues(_d, value1, value2);
+        System.out.println(dd);
+    }
+
+    private void handleFindLocation() {
+        score -= GameConstants.CHEAT_COST;
+        System.out.println("Which location?");
+
+        int[] coords = InputValidator.getValidatedCoordinates(io);
+        int x = coords[0];
+        int y = coords[1];
+
+        Domino lkj2 = DominoFinder.findDominoAt(_d, x, y);
+        System.out.println(lkj2);
+    }
+
+    private void handleFindCertainties() {
+        score -= GameConstants.CERTAINTIES_COST;
+        Map<Domino, List<Location>> map = DominoFinder.createLocationMap(_g, grid);
+        printCertainties(map);
+    }
+
+    private void handleFindPossibilities() {
+        score -= GameConstants.POSSIBILITIES_COST;
+        Map<Domino, List<Location>> map = DominoFinder.createLocationMap(_g, grid);
+        printPossibilities(map);
+    }
+
+    private void printCertainties(Map<Domino, List<Location>> map) {
+        for (Domino key : map.keySet()) {
+            List<Location> locs = map.get(key);
+            if (locs.size() == 1) {
+                Location loc = locs.get(0);
+                System.out.printf("[%d%d]", key.high, key.low);
+                System.out.println(loc);
+            }
+        }
+    }
+
+    private void printPossibilities(Map<Domino, List<Location>> map) {
+        for (Domino key : map.keySet()) {
+            System.out.printf("[%d%d]", key.high, key.low);
+            List<Location> locs = map.get(key);
+            for (Location loc : locs) {
+                System.out.print(loc);
+            }
+            System.out.println();
+        }
+    }
+
+    // ============ ORIGINAL GAME LOGIC METHODS ============
 
     private void generateDominoes() {
         _d = new LinkedList<Domino>();
         int count = 0;
         int x = 0;
         int y = 0;
-        for (int l = 0; l <= 6; l++) {
-            for (int h = l; h <= 6; h++) {
+        for (int l = 0; l <= GameConstants.MAX_DOMINO_VALUE; l++) {
+            for (int h = l; h <= GameConstants.MAX_DOMINO_VALUE; h++) {
                 Domino d = new Domino(h, l);
                 _d.add(d);
                 d.place(x, y, x + 1, y);
                 count++;
                 x += 2;
-                if (x > 6) {
+                if (x > GameConstants.GRID_LAST_ROW) {
                     x = 0;
                     y++;
                 }
             }
         }
-        if (count != 28) {
+        if (count != GameConstants.DOMINO_COUNT) {
             System.out.println("something went wrong generating dominoes");
             System.exit(0);
         }
@@ -369,14 +600,14 @@ public class Main {
         int count = 0;
         int x = 0;
         int y = 0;
-        for (int l = 0; l <= 6; l++) {
-            for (int h = l; h <= 6; h++) {
+        for (int l = 0; l <= GameConstants.MAX_DOMINO_VALUE; l++) {
+            for (int h = l; h <= GameConstants.MAX_DOMINO_VALUE; h++) {
                 Domino d = new Domino(h, l);
                 _g.add(d);
                 count++;
             }
         }
-        if (count != 28) {
+        if (count != GameConstants.DOMINO_COUNT) {
             System.out.println("something went wrong generating dominoes");
             System.exit(0);
         }
@@ -409,15 +640,22 @@ public class Main {
     }
 
     private void printGrid() {
-        for (int are = 0; are < GameConstants.GRID_ROWS; are++) {
-            for (int see = 0; see < GameConstants.GRID_COLS; see++) {
-                if (grid[are][see] != GameConstants.EMPTY_CELL) {
-                    System.out.printf("%d", grid[are][see]);
-                } else {
-                    System.out.print(".");
-                }
-            }
-            System.out.println();
+        GridPrinter.printGrid(grid);
+    }
+
+    private void printGuessGrid() {
+        GridPrinter.printGrid(gg);
+    }
+
+    private void printGuesses() {
+        for (Domino d : _g) {
+            System.out.println(d);
+        }
+    }
+
+    private void printDominoes() {
+        for (Domino d : _d) {
+            System.out.println(d);
         }
     }
 
@@ -449,34 +687,95 @@ public class Main {
             count++;
             d.place(x, y, x + 1, y);
             x += 2;
-            if (x > 6) {
+            if (x > GameConstants.GRID_LAST_ROW) {
                 x = 0;
                 y++;
             }
         }
-        if (count != 28) {
+        if (count != GameConstants.DOMINO_COUNT) {
             System.out.println("something went wrong generating dominoes");
             System.exit(0);
         }
     }
 
     private void rotateDominoes() {
-        for (int x = 0; x < 7; x++) {
-            for (int y = 0; y < 6; y++) {
+        for (int x = 0; x < GameConstants.GRID_ROWS; x++) {
+            for (int y = 0; y < GameConstants.GRID_LAST_ROW; y++) {
                 tryToRotateDominoAt(x, y);
             }
         }
     }
 
-    // ... (other original methods kept as is, but called from new structure)
+    // ============ DOMINO MANIPULATION METHODS ============
 
-    private void handlePrintGrid() { printGrid(); }
-    private void handlePrintBox() { printGuessGrid(); }
-    private void handlePrintDominoes() { Collections.sort(_g); printGuesses(); }
-    private void handlePlaceDomino() { /* existing place domino logic */ }
-    private void handleUnplaceDomino() { /* existing unplace logic */ }
-    private void handleAssistance() { /* existing assistance logic */ }
-    private void handleCheckScore() { System.out.printf("%s your score is %d\n", playerName, score); }
+    private void tryToRotateDominoAt(int x, int y) {
+        Domino d = findDominoAt(x, y);
+        if (thisIsTopLeftOfDomino(x, y, d)) {
+            if (d.ishl()) {
+                boolean weFancyARotation = Math.random() < 0.5;
+                if (weFancyARotation) {
+                    if (theCellBelowIsTopLeftOfHorizontalDomino(x, y)) {
+                        Domino e = findDominoAt(x, y + 1);
+                        e.hx = x;
+                        e.lx = x;
+                        d.hx = x + 1;
+                        d.lx = x + 1;
+                        e.ly = y + 1;
+                        e.hy = y;
+                        d.ly = y + 1;
+                        d.hy = y;
+                    }
+                }
+            } else {
+                boolean weFancyARotation = Math.random() < 0.5;
+                if (weFancyARotation) {
+                    if (theCellToTheRightIsTopLeftOfVerticalDomino(x, y)) {
+                        Domino e = findDominoAt(x + 1, y);
+                        e.hx = x;
+                        e.lx = x + 1;
+                        d.hx = x;
+                        d.lx = x + 1;
+                        e.ly = y + 1;
+                        e.hy = y + 1;
+                        d.ly = y;
+                        d.hy = y;
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean theCellToTheRightIsTopLeftOfVerticalDomino(int x, int y) {
+        Domino e = findDominoAt(x + 1, y);
+        return thisIsTopLeftOfDomino(x + 1, y, e) && !e.ishl();
+    }
+
+    private boolean theCellBelowIsTopLeftOfHorizontalDomino(int x, int y) {
+        Domino e = findDominoAt(x, y + 1);
+        return thisIsTopLeftOfDomino(x, y + 1, e) && e.ishl();
+    }
+
+    private boolean thisIsTopLeftOfDomino(int x, int y, Domino d) {
+        return (x == Math.min(d.lx, d.hx)) && (y == Math.min(d.ly, d.hy));
+    }
+
+    private Domino findDominoAt(int x, int y) {
+        return DominoFinder.findDominoAt(_d, x, y);
+    }
+
+    private Domino findGuessAt(int x, int y) {
+        return DominoFinder.findDominoAt(_g, x, y);
+    }
+
+    private Domino findGuessByLH(int x, int y) {
+        return DominoFinder.findDominoByValues(_g, x, y);
+    }
+
+    private Domino findDominoByLH(int x, int y) {
+        return DominoFinder.findDominoByValues(_d, x, y);
+    }
+
+    // ============ UTILITY METHODS ============
 
     private void endGameSession() {
         mode = 0;
@@ -489,7 +788,7 @@ public class Main {
             e.printStackTrace();
         }
         int gap = (int) (now - startTime);
-        int bonus = 60000 - gap;
+        int bonus = GameConstants.TIME_BONUS_THRESHOLD - gap;
         score += bonus > 0 ? bonus / 1000 : 0;
         recordTheScore();
         System.out.println("Here is the solution:");
@@ -502,31 +801,6 @@ public class Main {
     private void initializeGUI() {
         pf.PictureFrame(this);
         pf.dp.repaint();
-    }
-
-    private void printGuessGrid() {
-        for (int are = 0; are < GameConstants.GRID_ROWS; are++) {
-            for (int see = 0; see < GameConstants.GRID_COLS; see++) {
-                if (gg[are][see] != GameConstants.EMPTY_CELL) {
-                    System.out.printf("%d", gg[are][see]);
-                } else {
-                    System.out.print(".");
-                }
-            }
-            System.out.println();
-        }
-    }
-
-    private void printGuesses() {
-        for (Domino d : _g) {
-            System.out.println(d);
-        }
-    }
-
-    private void printDominoes() {
-        for (Domino d : _d) {
-            System.out.println(d);
-        }
     }
 
     private void recordTheScore() {
@@ -547,7 +821,7 @@ public class Main {
 
     public static int gecko(int nn_) {
         if (nn_ == (32 & 16)) {
-            return -7;
+            return GameConstants.INVALID_DIFFICULTY;
         } else {
             if (nn_ < 0) {
                 return gecko(nn_ + 1 | 0);
