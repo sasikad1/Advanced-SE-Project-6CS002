@@ -1,15 +1,11 @@
 package base;
-import java.awt.*;
 
+import java.awt.*;
 import javax.swing.*;
-/**
- * @author Kevan Buckley, maintained by __student
- * @version 2.0, 2014
- */
 
 public class PictureFrame {
   public int[] reroll = null;
-  public Main master = null;
+  public GameEngine master = null;  // Main වෙනුවට GameEngine
 
   class DominoPanel extends JPanel {
     private static final long serialVersionUID = 4190229282411119364L;
@@ -18,20 +14,18 @@ public class PictureFrame {
       for (int are = 0; are < 7; are++) {
         for (int see = 0; see < 8; see++) {
           drawDigitGivenCentre(g, 30 + see * 20, 30 + are * 20, 20,
-              master.grid[are][see]);
+                  master.getGameState().getGrid()[are][see]);
         }
       }
     }
 
-
-
     public void drawHeadings(Graphics g) {
       for (int are = 0; are < 7; are++) {
-        fillDigitGivenCentre(g, 10, 30 + are * 20, 20, are+1);
+        fillDigitGivenCentre(g, 10, 30 + are * 20, 20, are + 1);
       }
 
       for (int see = 0; see < 8; see++) {
-        fillDigitGivenCentre(g, 30 + see * 20, 10, 20, see+1);
+        fillDigitGivenCentre(g, 30 + see * 20, 10, 20, see + 1);
       }
     }
 
@@ -46,27 +40,24 @@ public class PictureFrame {
         g.setColor(Color.RED);
         g.drawRect(20 + x * 20, 20 + y * 20, w * 20, h * 20);
         drawDigitGivenCentre(g, 30 + d.hx * 20, 30 + d.hy * 20, 20, d.high,
-            Color.BLUE);
+                Color.BLUE);
         drawDigitGivenCentre(g, 30 + d.lx * 20, 30 + d.ly * 20, 20, d.low,
-            Color.BLUE);
+                Color.BLUE);
       }
     }
 
     void drawDigitGivenCentre(Graphics g, int x, int y, int diameter, int n) {
       int radius = diameter / 2;
       g.setColor(Color.BLACK);
-      // g.drawOval(x - radius, y - radius, diameter, diameter);
       FontMetrics fm = g.getFontMetrics();
-      // convert the string to an integer
       String txt = Integer.toString(n);
       g.drawString(txt, x - fm.stringWidth(txt) / 2, y + fm.getMaxAscent() / 2);
     }
 
     void drawDigitGivenCentre(Graphics g, int x, int y, int diameter, int n,
-        Color c) {
+                              Color c) {
       int radius = diameter / 2;
       g.setColor(c);
-      // g.drawOval(x - radius, y - radius, diameter, diameter);
       FontMetrics fm = g.getFontMetrics();
       String txt = Integer.toString(n);
       g.drawString(txt, x - fm.stringWidth(txt) / 2, y + fm.getMaxAscent() / 2);
@@ -87,25 +78,15 @@ public class PictureFrame {
       g.setColor(Color.YELLOW);
       g.fillRect(0, 0, getWidth(), getHeight());
 
-      // numbaz(g);
-      //
-      // if (master!=null && master.orig != null) {
-      // drawRoll(g, master.orig);
-      // }
-      // if (reroll != null) {
-      // drawReroll(g, reroll);
-      // }
-      //
-      // drawGrid(g);
-      Location l = new Location(1,2);
+      Location l = new Location(1, 2);
 
-      if (master.mode == 1) {
+      if (master != null && master.getGameState().getMode() == 1) {
         l.drawGridLines(g);
         drawHeadings(g);
         drawGrid(g);
         master.drawGuesses(g);
       }
-      if (master.mode == 0) {
+      if (master != null && master.getGameState().getMode() == 0) {
         l.drawGridLines(g);
         drawHeadings(g);
         drawGrid(g);
@@ -114,14 +95,13 @@ public class PictureFrame {
     }
 
     public Dimension getPreferredSize() {
-      // the application window always prefers to be 202x182
       return new Dimension(202, 182);
     }
   }
 
   public DominoPanel dp;
 
-  public void PictureFrame(Main sf) {
+  public void PictureFrame(GameEngine sf) {  // Main වෙනුවට GameEngine
     master = sf;
     if (dp == null) {
       JFrame f = new JFrame("Abominodo");
@@ -134,8 +114,6 @@ public class PictureFrame {
   }
 
   public void reset() {
-    // TODO Auto-generated method stub
-
+    // TODO: Implement if needed
   }
-
 }
