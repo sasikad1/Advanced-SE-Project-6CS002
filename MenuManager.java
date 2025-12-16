@@ -2,12 +2,38 @@ package base;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class MenuManager {
     private IOSpecialist io;
+    private Map<Integer, Runnable> difficultyHandlers;
+    private Map<Integer, Runnable> menuActionHandlers;
 
     public MenuManager(IOSpecialist io) {
         this.io = io;
+        initializeHandlers();
+    }
+
+    private void initializeHandlers() {
+        // Difficulty menu handlers
+        difficultyHandlers = new HashMap<>();
+        difficultyHandlers.put(GameConstants.DIFFICULTY_EASY, new Runnable() {
+            public void run() {
+                // Easy difficulty selected
+            }
+        });
+        difficultyHandlers.put(GameConstants.DIFFICULTY_MEDIUM, new Runnable() {
+            public void run() {
+                // Medium difficulty selected
+            }
+        });
+        difficultyHandlers.put(GameConstants.DIFFICULTY_HARD, new Runnable() {
+            public void run() {
+                // Hard difficulty selected
+            }
+        });
     }
 
     public void displayWelcome() {
@@ -139,8 +165,6 @@ public class MenuManager {
     }
 
     private boolean isValidDifficultyChoice(int choice) {
-        return choice == GameConstants.DIFFICULTY_EASY ||
-                choice == GameConstants.DIFFICULTY_MEDIUM ||
-                choice == GameConstants.DIFFICULTY_HARD;
+        return difficultyHandlers.containsKey(choice);
     }
 }

@@ -1,14 +1,51 @@
 package base;
 
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.*;
 
 public class PictureFrame {
   public int[] reroll = null;
-  public GameEngine master = null;  // Main වෙනුවට GameEngine
+  public GameEngine master = null;
+
+  // Inner interface for rendering strategies - ඉහලට ගෙනියන්න
+  interface RenderStrategy {
+    void render(Graphics g);
+  }
 
   class DominoPanel extends JPanel {
     private static final long serialVersionUID = 4190229282411119364L;
+    private Map<Integer, RenderStrategy> renderStrategies;
+
+    // Constructor එකක් එකතු කරන්න
+    public DominoPanel() {
+      initializeRenderStrategies();
+    }
+
+    private void initializeRenderStrategies() {
+      renderStrategies = new HashMap<>();
+
+      renderStrategies.put(0, new RenderStrategy() {
+        public void render(Graphics g) {
+          Location l = new Location(1, 2);
+          l.drawGridLines(g);
+          drawHeadings(g);
+          drawGrid(g);
+          master.drawDominoes(g);
+        }
+      });
+
+      renderStrategies.put(1, new RenderStrategy() {
+        public void render(Graphics g) {
+          Location l = new Location(1, 2);
+          l.drawGridLines(g);
+          drawHeadings(g);
+          drawGrid(g);
+          master.drawGuesses(g);
+        }
+      });
+    }
 
     public void drawGrid(Graphics g) {
       for (int are = 0; are < 7; are++) {
@@ -78,19 +115,17 @@ public class PictureFrame {
       g.setColor(Color.YELLOW);
       g.fillRect(0, 0, getWidth(), getHeight());
 
-      Location l = new Location(1, 2);
-
-      if (master != null && master.getGameState().getMode() == 1) {
-        l.drawGridLines(g);
-        drawHeadings(g);
-        drawGrid(g);
-        master.drawGuesses(g);
-      }
-      if (master != null && master.getGameState().getMode() == 0) {
-        l.drawGridLines(g);
-        drawHeadings(g);
-        drawGrid(g);
-        master.drawDominoes(g);
+      if (master != null) {
+        RenderStrategy strategy = renderStrategies.get(master.getGameState().getMode());
+        if (strategy != null) {
+          strategy.render(g);
+        } else {
+          // Default rendering එකක් (අවශ්‍ය නම්)
+          Location l = new Location(1, 2);
+          l.drawGridLines(g);
+          drawHeadings(g);
+          drawGrid(g);
+        }
       }
     }
 
@@ -101,7 +136,7 @@ public class PictureFrame {
 
   public DominoPanel dp;
 
-  public void PictureFrame(GameEngine sf) {  // Main වෙනුවට GameEngine
+  public void PictureFrame(GameEngine sf) {
     master = sf;
     if (dp == null) {
       JFrame f = new JFrame("Abominodo");

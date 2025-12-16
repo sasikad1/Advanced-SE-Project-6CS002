@@ -1,14 +1,18 @@
 package base;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class GameEngine {
     private GameState gameState;
-    private GameInitializer gameInitializer;    // NEW: Initialization logic
-    private DominoPlacer dominoPlacer;          // NEW: Placement logic
+    private GameInitializer gameInitializer;
+    private DominoPlacer dominoPlacer;
     private CheatSystem cheatSystem;
     private PictureFrame pictureFrame;
-    private GridManager gridManager;            // NEW: Added for completeness
-    private DominoManager dominoManager;        // NEW: Added for completeness
+    private GridManager gridManager;
+    private DominoManager dominoManager;
     private IOSpecialist io;
+    private Map<Integer, PlayMenuCommand> playCommands;
 
     public GameEngine(IOSpecialist io) {
         this.io = io;
@@ -19,9 +23,70 @@ public class GameEngine {
         this.dominoPlacer = new DominoPlacer(gameState, gridManager);
         this.cheatSystem = new CheatSystem(this, io);
         this.pictureFrame = new PictureFrame();
+        initializePlayCommands();
     }
 
-    // Method ගණන අඩු කරලා
+    private void initializePlayCommands() {
+        playCommands = new HashMap<>();
+
+        // Play Menu Commands
+        playCommands.put(GameConstants.PLAY_GIVE_UP, new PlayMenuCommand() {
+            public boolean execute(GameEngine engine) {
+                return false; // Give up - stop playing
+            }
+        });
+
+        playCommands.put(GameConstants.PLAY_PLACE_DOMINO, new PlayMenuCommand() {
+            public boolean execute(GameEngine engine) {
+                return engine.handlePlaceDomino();
+            }
+        });
+
+        playCommands.put(GameConstants.PLAY_UNPLACE_DOMINO, new PlayMenuCommand() {
+            public boolean execute(GameEngine engine) {
+                return engine.handleUnplaceDomino();
+            }
+        });
+
+        playCommands.put(GameConstants.PLAY_PRINT_GRID, new PlayMenuCommand() {
+            public boolean execute(GameEngine engine) {
+                engine.gridManager.printMainGrid();
+                return true;
+            }
+        });
+
+        playCommands.put(GameConstants.PLAY_PRINT_BOX, new PlayMenuCommand() {
+            public boolean execute(GameEngine engine) {
+                engine.gridManager.printGuessGrid();
+                return true;
+            }
+        });
+
+        playCommands.put(GameConstants.PLAY_PRINT_DOMINOES, new PlayMenuCommand() {
+            public boolean execute(GameEngine engine) {
+                engine.printGuesses();
+                return true;
+            }
+        });
+
+        playCommands.put(GameConstants.PLAY_CHECK_SCORE, new PlayMenuCommand() {
+            public boolean execute(GameEngine engine) {
+                new ScoreManager().displayScore(
+                        engine.gameState.getPlayerName(),
+                        engine.gameState.getScore()
+                );
+                return true;
+            }
+        });
+
+        playCommands.put(GameConstants.PLAY_ASSISTANCE, new PlayMenuCommand() {
+            public boolean execute(GameEngine engine) {
+                engine.cheatSystem.handleCheatMenu();
+                return true;
+            }
+        });
+    }
+
     public void initializeGame(int difficulty) {
         gameInitializer.initializeGame(difficulty, gameState);
         initializeGUI();
@@ -41,19 +106,11 @@ public class GameEngine {
     }
 
     private boolean handlePlayMenuChoice(int choice) {
-        switch (choice) {
-            case GameConstants.PLAY_GIVE_UP:
-                return false;
-            case GameConstants.PLAY_PLACE_DOMINO:
-                return handlePlaceDomino();
-            case GameConstants.PLAY_UNPLACE_DOMINO:
-                return handleUnplaceDomino();
-            case GameConstants.PLAY_ASSISTANCE:
-                cheatSystem.handleCheatMenu();
-                break;
-            default:
-                handleDisplayChoice(choice);
+        PlayMenuCommand command = playCommands.get(choice);
+        if (command != null) {
+            return command.execute(this);
         }
+        System.out.println("Invalid play menu choice");
         return true;
     }
 
@@ -90,22 +147,22 @@ public class GameEngine {
         return true;
     }
 
-    private void handleDisplayChoice(int choice) {
-        switch (choice) {
-            case GameConstants.PLAY_PRINT_GRID:
-                gridManager.printMainGrid();
-                break;
-            case GameConstants.PLAY_PRINT_BOX:
-                gridManager.printGuessGrid();
-                break;
-            case GameConstants.PLAY_PRINT_DOMINOES:
-                printGuesses();
-                break;
-            case GameConstants.PLAY_CHECK_SCORE:
-                new ScoreManager().displayScore(gameState.getPlayerName(), gameState.getScore());
-                break;
-        }
-    }
+//    private void handleDisplayChoice(int choice) {
+//        switch (choice) {
+//            case GameConstants.PLAY_PRINT_GRID:
+//                gridManager.printMainGrid();
+//                break;
+//            case GameConstants.PLAY_PRINT_BOX:
+//                gridManager.printGuessGrid();
+//                break;
+//            case GameConstants.PLAY_PRINT_DOMINOES:
+//                printGuesses();
+//                break;
+//            case GameConstants.PLAY_CHECK_SCORE:
+//                new ScoreManager().displayScore(gameState.getPlayerName(), gameState.getScore());
+//                break;
+//        }
+//    }
 
     private Domino getSelectedDomino(int[] coords, boolean horizontal) {
         int x = coords[0];

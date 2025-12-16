@@ -6,11 +6,48 @@ public class CheatSystem {
     private GameEngine gameEngine;
     private MenuManager menuManager;
     private IOSpecialist io;
+    private Map<Integer, CheatCommand> cheatCommands;
 
     public CheatSystem(GameEngine gameEngine, IOSpecialist io) {
         this.gameEngine = gameEngine;
         this.io = io;
         this.menuManager = new MenuManager(io);
+        initializeCheatCommands();
+    }
+
+    private void initializeCheatCommands() {
+        cheatCommands = new HashMap<>();
+
+        // Cheat Menu Commands
+        cheatCommands.put(GameConstants.CHEAT_CHANGE_MIND, new CheatCommand() {
+            public void execute(CheatSystem system) {
+                system.handleChangedMind();
+            }
+        });
+
+        cheatCommands.put(GameConstants.CHEAT_FIND_DOMINO, new CheatCommand() {
+            public void execute(CheatSystem system) {
+                system.handleFindDomino();
+            }
+        });
+
+        cheatCommands.put(GameConstants.CHEAT_FIND_LOCATION, new CheatCommand() {
+            public void execute(CheatSystem system) {
+                system.handleFindLocation();
+            }
+        });
+
+        cheatCommands.put(GameConstants.CHEAT_FIND_CERTAINTIES, new CheatCommand() {
+            public void execute(CheatSystem system) {
+                system.handleFindCertainties();
+            }
+        });
+
+        cheatCommands.put(GameConstants.CHEAT_FIND_POSSIBILITIES, new CheatCommand() {
+            public void execute(CheatSystem system) {
+                system.handleFindPossibilities();
+            }
+        });
     }
 
     public void handleCheatMenu() {
@@ -20,22 +57,11 @@ public class CheatSystem {
     }
 
     private void handleCheatChoice(int choice) {
-        switch (choice) {
-            case GameConstants.CHEAT_CHANGE_MIND:
-                handleChangedMind();
-                break;
-            case GameConstants.CHEAT_FIND_DOMINO:
-                handleFindDomino();
-                break;
-            case GameConstants.CHEAT_FIND_LOCATION:
-                handleFindLocation();
-                break;
-            case GameConstants.CHEAT_FIND_CERTAINTIES:
-                handleFindCertainties();
-                break;
-            case GameConstants.CHEAT_FIND_POSSIBILITIES:
-                handleFindPossibilities();
-                break;
+        CheatCommand command = cheatCommands.get(choice);
+        if (command != null) {
+            command.execute(this);
+        } else {
+            System.out.println("Invalid cheat choice");
         }
     }
 
