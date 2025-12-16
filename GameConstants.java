@@ -3,7 +3,7 @@ package base;
 public class GameConstants {
     // Existing constants
     public static final int GRID_ROWS = 7;
-    public static final int GRID_COLS = 8;
+    public static final int GRID_COLUMNS = 8;
     public static final int EMPTY_CELL = 9;
     public static final int SCORE_CORRECT = 1000;
     public static final int SCORE_WRONG = -1000;

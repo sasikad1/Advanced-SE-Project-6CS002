@@ -5,46 +5,46 @@ package base;
  */
 
 public class Domino implements Comparable<Domino> {
-  public int high;
-  public int low;
-  public int hx;
-  public int hy;
-  public int lx;
-  public int ly;
+  public int highValue;
+  public int lowValue;
+  public int highValueX;
+  public int highValueY;
+  public int lowValueX;
+  public int lowValueY;
   public boolean placed = false;
 
-  public Domino(int high, int low) {
+  public Domino(int highValue, int lowValue) {
     super();
-    this.high = high;
-    this.low = low;
+    this.highValue = highValue;
+    this.lowValue = lowValue;
   }
   
   public void place(int hx, int hy, int lx, int ly) {
-    this.hx = hx;
-    this.hy = hy;
-    this.lx = lx;
-    this.ly = ly;
+    this.highValueX = hx;
+    this.highValueY = hy;
+    this.lowValueX = lx;
+    this.lowValueY = ly;
     placed = true;
   }
 
   public String toString() {
     StringBuffer result = new StringBuffer();
     result.append("[");
-    result.append(Integer.toString(high));
-    result.append(Integer.toString(low));
+    result.append(Integer.toString(highValue));
+    result.append(Integer.toString(lowValue));
     result.append("]");
     if(!placed){
       result.append("unplaced");
     } else {
       result.append("(");
-      result.append(Integer.toString(hx+1));
+      result.append(Integer.toString(highValueX +1));
       result.append(",");
-      result.append(Integer.toString(hy+1));
+      result.append(Integer.toString(highValueY +1));
       result.append(")");
       result.append("(");
-      result.append(Integer.toString(lx+1));
+      result.append(Integer.toString(lowValueX +1));
       result.append(",");
-      result.append(Integer.toString(ly+1));
+      result.append(Integer.toString(lowValueY +1));
       result.append(")");
     }
     return result.toString();
@@ -53,25 +53,25 @@ public class Domino implements Comparable<Domino> {
   /** turn the domino around 180 degrees clockwise*/
   
   public void invert() {
-    int tx = hx;
-    hx = lx;
-    lx = tx;
+    int temporaryX = highValueX;
+    highValueX = lowValueX;
+    lowValueX = temporaryX;
     
-    int ty = hy;
-    hy = ly;
-    ly = ty;    
+    int temporaryY = highValueY;
+    highValueY = lowValueY;
+    lowValueY = temporaryY;
   }
 
-  public boolean ishl() {    
-    return hy==ly;
+  public boolean isHorizontal() {
+    return highValueY == lowValueY;
   }
 
 
-  public int compareTo(Domino arg0) {
-    if(this.high < arg0.high){
+  public int compareTo(Domino otherDomino) {
+    if(this.highValue < otherDomino.highValue){
       return 1;
     }
-    return this.low - arg0.low;
+    return this.lowValue - otherDomino.lowValue;
   }
   
   

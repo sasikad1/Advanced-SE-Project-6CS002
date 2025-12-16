@@ -20,9 +20,9 @@ public class DominoManager {
 
         for (int low = 0; low <= GameConstants.MAX_DOMINO_VALUE; low++) {
             for (int high = low; high <= GameConstants.MAX_DOMINO_VALUE; high++) {
-                Domino d = new Domino(high, low);
-                dominoes.add(d);
-                d.place(x, y, x + 1, y);
+                Domino domino = new Domino(high, low);
+                dominoes.add(domino);
+                domino.place(x, y, x + 1, y);
                 count++;
                 x += 2;
                 if (x > GameConstants.GRID_LAST_ROW) {
@@ -82,7 +82,7 @@ public class DominoManager {
     public Domino findDominoAt(int x, int y, boolean fromGuesses) {
         List<Domino> searchList = fromGuesses ? guesses : dominoes;
         for (Domino d : searchList) {
-            if ((d.lx == x && d.ly == y) || (d.hx == x && d.hy == y)) {
+            if ((d.lowValueX == x && d.lowValueY == y) || (d.highValueX == x && d.highValueY == y)) {
                 return d;
             }
         }
@@ -92,8 +92,8 @@ public class DominoManager {
     public Domino findDominoByValues(int value1, int value2, boolean fromGuesses) {
         List<Domino> searchList = fromGuesses ? guesses : dominoes;
         for (Domino d : searchList) {
-            if ((d.low == value1 && d.high == value2) ||
-                    (d.high == value1 && d.low == value2)) {
+            if ((d.lowValue == value1 && d.highValue == value2) ||
+                    (d.highValue == value1 && d.lowValue == value2)) {
                 return d;
             }
         }
@@ -111,44 +111,44 @@ public class DominoManager {
         }
     }
 
-    private void tryToRotateDominoAt(int x, int y) {
-        Domino d = findDominoAt(x, y, false);
-        if (d != null && isTopLeftOfDomino(x, y, d)) {
-            if (d.ishl()) {
-                if (Math.random() < 0.5 && isCellBelowTopLeftOfHorizontalDomino(x, y)) {
-                    Domino e = findDominoAt(x, y + 1, false);
-                    if (e != null) {
-                        e.hx = x; e.lx = x;
-                        d.hx = x + 1; d.lx = x + 1;
-                        e.ly = y + 1; e.hy = y;
-                        d.ly = y + 1; d.hy = y;
+    private void tryToRotateDominoAt(int currentX, int currentY) {
+        Domino d = findDominoAt(currentX, currentY, false);
+        if (d != null && isTopLeftOfDomino(currentX, currentY, d)) {
+            if (d.isHorizontal()) {
+                if (Math.random() < 0.5 && isCellBelowTopLeftOfHorizontalDomino(currentX, currentY)) {
+                    Domino adjacentDomino = findDominoAt(currentX, currentY + 1, false);
+                    if (adjacentDomino != null) {
+                        adjacentDomino.highValueX = currentX; adjacentDomino.lowValueX = currentX;
+                        d.highValueX = currentX + 1; d.lowValueX = currentX + 1;
+                        adjacentDomino.lowValueY = currentY + 1; adjacentDomino.highValueY = currentY;
+                        d.lowValueY = currentY + 1; d.highValueY = currentY;
                     }
                 }
             } else {
-                if (Math.random() < 0.5 && isCellToRightTopLeftOfVerticalDomino(x, y)) {
-                    Domino e = findDominoAt(x + 1, y, false);
+                if (Math.random() < 0.5 && isCellToRightTopLeftOfVerticalDomino(currentX, currentY)) {
+                    Domino e = findDominoAt(currentX + 1, currentY, false);
                     if (e != null) {
-                        e.hx = x; e.lx = x + 1;
-                        d.hx = x; d.lx = x + 1;
-                        e.ly = y + 1; e.hy = y + 1;
-                        d.ly = y; d.hy = y;
+                        e.highValueX = currentX; e.lowValueX = currentX + 1;
+                        d.highValueX = currentX; d.lowValueX = currentX + 1;
+                        e.lowValueY = currentY + 1; e.highValueY = currentY + 1;
+                        d.lowValueY = currentY; d.highValueY = currentY;
                     }
                 }
             }
         }
     }
 
-    private boolean isTopLeftOfDomino(int x, int y, Domino d) {
-        return (x == Math.min(d.lx, d.hx)) && (y == Math.min(d.ly, d.hy));
+    private boolean isTopLeftOfDomino(int currentX, int currentY, Domino domino) {
+        return (currentX == Math.min(domino.lowValueX, domino.highValueX)) && (currentY == Math.min(domino.lowValueY, domino.highValueY));
     }
 
-    private boolean isCellToRightTopLeftOfVerticalDomino(int x, int y) {
-        Domino e = findDominoAt(x + 1, y, false);
-        return e != null && isTopLeftOfDomino(x + 1, y, e) && !e.ishl();
+    private boolean isCellToRightTopLeftOfVerticalDomino(int currentX, int currentY) {
+        Domino e = findDominoAt(currentX + 1, currentY, false);
+        return e != null && isTopLeftOfDomino(currentX + 1, currentY, e) && !e.isHorizontal();
     }
 
-    private boolean isCellBelowTopLeftOfHorizontalDomino(int x, int y) {
-        Domino e = findDominoAt(x, y + 1, false);
-        return e != null && isTopLeftOfDomino(x, y + 1, e) && e.ishl();
+    private boolean isCellBelowTopLeftOfHorizontalDomino(int currentX, int currentY) {
+        Domino e = findDominoAt(currentX, currentY + 1, false);
+        return e != null && isTopLeftOfDomino(currentX, currentY + 1, e) && e.isHorizontal();
     }
 }

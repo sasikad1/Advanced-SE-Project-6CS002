@@ -2,8 +2,8 @@ package base;
 
 public class Main {
     public static void main(String[] args) {
-        IOSpecialist io = new IOSpecialist();
-        GameManager gameManager = new GameManager(io);
+        IOSpecialist ioSpecialist = new IOSpecialist();
+        GameManager gameManager = new GameManager(ioSpecialist);
         gameManager.run();
     }
 }

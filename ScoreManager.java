@@ -23,7 +23,7 @@ public class ScoreManager {
         }
     }
 
-    public void displayHighScores() {
+    public void showHighScores() {
         System.out.println();
         printHeader("High Scores");
 
@@ -41,10 +41,10 @@ public class ScoreManager {
                 String[] parts = line.split(",");
                 if (parts.length >= 3) {
                     String name = parts[0];
-                    String score = parts[1];
-                    long timestamp = Long.parseLong(parts[2]);
-                    String date = dateFormatter.format(new Date(timestamp));
-                    System.out.printf("%20s %6s %s\n", name, score, date);
+                    String scoreStr = parts[1];
+                    long scoreValue = Integer.parseInt(scoreStr);
+                    String date = dateFormatter.format(new Date(scoreValue));
+                    System.out.printf("%20s %6s %s\n", name, scoreStr, date);
                 }
             }
             reader.close();

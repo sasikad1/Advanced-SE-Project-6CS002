@@ -1,22 +1,19 @@
 package base;
 import java.net.InetAddress;
-/**
- * @author Kevan Buckley, maintained by __student
- * @version 2.0, 2014
- */
+
 
 public class ConnectionGenius {
 
-  InetAddress ipa;
+  InetAddress serverAddress;
   
-  public ConnectionGenius(InetAddress ipa) {
-    this.ipa = ipa;
+  public ConnectionGenius(InetAddress serverAddress) {
+    this.serverAddress = serverAddress;
   }
 
-  public void fireUpGame() {
+  public void startGame() {
     downloadWebVersion();
     connectToWebService();
-    awayWeGo();
+    completeInitialization();
   }
   
   public void downloadWebVersion(){
@@ -28,7 +25,7 @@ public class ConnectionGenius {
     System.out.println("Connecting");
   }
   
-  public void awayWeGo(){
+  public void completeInitialization(){
     System.out.println("Ready to play");
   }
 

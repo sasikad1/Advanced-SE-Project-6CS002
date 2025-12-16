@@ -9,7 +9,7 @@ import java.util.Map;
 public class MenuManager {
     private IOSpecialist io;
     private Map<Integer, Runnable> difficultyHandlers;
-    private Map<Integer, Runnable> menuActionHandlers;
+//    private Map<Integer, Runnable> menuActionHandlers;
 
     public MenuManager(IOSpecialist io) {
         this.io = io;
@@ -102,25 +102,25 @@ public class MenuManager {
         printMenuHeader("Rules");
         System.out.println("Rules by __student");
 
-        JFrame f = new JFrame("Rules by __student");
-        f.setSize(new Dimension(500, 500));
-        JEditorPane w;
+        JFrame rulesFrame = new JFrame("Rules by __student");
+        rulesFrame.setSize(new Dimension(500, 500));
+        JEditorPane editorPane;
         try {
-            w = new JEditorPane("http://www.scit.wlv.ac.uk/~in6659/abominodo/");
+            editorPane = new JEditorPane("http://www.scit.wlv.ac.uk/~in6659/abominodo/");
         } catch (Exception e) {
-            w = new JEditorPane("text/plain",
+            editorPane = new JEditorPane("text/plain",
                     "Problems retrieving the rules from the Internet");
         }
-        f.setContentPane(new JScrollPane(w));
-        f.setVisible(true);
-        f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        rulesFrame.setContentPane(new JScrollPane(editorPane));
+        rulesFrame.setVisible(true);
+        rulesFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
     public void displayInspiration() {
-        int index = (int) (Math.random() * (_Q.stuff.length / 3));
-        String what = _Q.stuff[index * 3];
-        String who = _Q.stuff[1 + index * 3];
-        System.out.printf("%s said \"%s\"", who, what);
+        int quoteIndex = (int) (Math.random() * (QuoteCollection.stuff.length / 3));
+        String quoteText = QuoteCollection.stuff[quoteIndex * 3];
+        String authorName = QuoteCollection.stuff[1 + quoteIndex * 3];
+        System.out.printf("%s said \"%s\"", authorName, quoteText);
         System.out.println();
         System.out.println();
     }

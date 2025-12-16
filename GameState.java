@@ -14,8 +14,8 @@ public class GameState {
     private List<Domino> guesses;
 
     public GameState() {
-        this.grid = new int[GameConstants.GRID_ROWS][GameConstants.GRID_COLS];
-        this.guessGrid = new int[GameConstants.GRID_ROWS][GameConstants.GRID_COLS];
+        this.grid = new int[GameConstants.GRID_ROWS][GameConstants.GRID_COLUMNS];
+        this.guessGrid = new int[GameConstants.GRID_ROWS][GameConstants.GRID_COLUMNS];
         this.score = 0;
         this.mode = -1;
         this.cheatFlag = 0;
@@ -53,10 +53,10 @@ public class GameState {
 
     // Helper methods
     public void initializeGrids() {
-        for (int r = 0; r < GameConstants.GRID_ROWS; r++) {
-            for (int c = 0; c < GameConstants.GRID_COLS; c++) {
-                grid[r][c] = GameConstants.EMPTY_CELL;
-                guessGrid[r][c] = GameConstants.EMPTY_CELL;
+        for (int row = 0; row < GameConstants.GRID_ROWS; row++) {
+            for (int column = 0; column < GameConstants.GRID_COLUMNS; column++) {
+                grid[row][column] = GameConstants.EMPTY_CELL;
+                guessGrid[row][column] = GameConstants.EMPTY_CELL;
             }
         }
     }

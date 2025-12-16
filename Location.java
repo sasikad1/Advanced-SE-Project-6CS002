@@ -9,44 +9,45 @@ import java.io.InputStreamReader;
  * @version 2.0, 2014
  */
 
-public class Location extends SpacePlace {
-  public int c;
-  public int r;
-  public DIRECTION d;
-  public int tmp;
+//public class Location extends SpacePlace {
+public class Location {
+  public int column;
+  public int row;
+  public DIRECTION direction;
+  public int temporaryValue;
   public enum DIRECTION {VERTICAL, HORIZONTAL};
   
-  public Location(int r, int c) {
-    this.r = r;
-    this.c = c;
+  public Location(int row, int column) {
+    this.row = row;
+    this.column = column;
   }
 
-  public Location(int r, int c, DIRECTION d) {    
-    this(r,c);
-    this.d=d;
+  public Location(int row, int column, DIRECTION direction) {
+    this(row, column);
+    this.direction = direction;
   }
   
   public String toString() {
-    if(d==null){
-      tmp = c + 1;
-      return "(" + (tmp) + "," + (r+1) + ")";
+    if(direction ==null){
+      temporaryValue = column + 1;
+      return "(" + (temporaryValue) + "," + (row +1) + ")";
     } else {
-      tmp = c + 1;
-      return "(" + (tmp) + "," + (r+1) + "," + d + ")";
+      temporaryValue = column + 1;
+      return "(" + (temporaryValue) + "," + (row +1) + "," + direction + ")";
     }
   }
   
-  public void drawGridLines(Graphics g) {
-    g.setColor(Color.LIGHT_GRAY);
-    for (tmp = 0; tmp <= 7; tmp++) {
-      g.drawLine(20, 20 + tmp * 20, 180, 20 + tmp * 20);
+  public void drawGridLines(Graphics graphics) {
+    graphics.setColor(Color.LIGHT_GRAY);
+    for (temporaryValue = 0; temporaryValue <= 7; temporaryValue++) {
+      graphics.drawLine(20, 20 + temporaryValue * 20, 180, 20 + temporaryValue * 20);
     }
     for (int see = 0; see <= 8; see++) {
-      g.drawLine(20 + see * 20, 20, 20 + see * 20, 160);
+      graphics.drawLine(20 + see * 20, 20, 20 + see * 20, 160);
     }
   }
   
-  public static int getInt() {
+  public static int readIntegerFromInput() {
     BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
     do {
       try {

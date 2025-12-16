@@ -9,12 +9,12 @@ public class GameManager {
     private MenuManager menuManager;
     private ScoreManager scoreManager;
     private IOSpecialist io;
-    private Map<Integer, MenuCommand> menuCommands;
+    private Map<Integer, MenuCommandInterface> menuCommands;
 
-    public GameManager(IOSpecialist io) {
-        this.io = io;
-        this.gameEngine = new GameEngine(io);
-        this.menuManager = new MenuManager(io);
+    public GameManager(IOSpecialist inputHandler) {
+        this.io = inputHandler;
+        this.gameEngine = new GameEngine(inputHandler);
+        this.menuManager = new MenuManager(inputHandler);
         this.scoreManager = new ScoreManager();
         initializeMenuCommands();
     }
@@ -23,35 +23,35 @@ public class GameManager {
         menuCommands = new HashMap<>();
 
         // Menu Commands
-        menuCommands.put(GameConstants.MENU_QUIT, new MenuCommand() {
+        menuCommands.put(GameConstants.MENU_QUIT, new MenuCommandInterface() {
             public boolean execute(GameManager manager) {
                 manager.handleQuit();
                 return false;
             }
         });
 
-        menuCommands.put(GameConstants.MENU_PLAY, new MenuCommand() {
+        menuCommands.put(GameConstants.MENU_PLAY, new MenuCommandInterface() {
             public boolean execute(GameManager manager) {
                 manager.handlePlayGame();
                 return true;
             }
         });
 
-        menuCommands.put(GameConstants.MENU_HIGH_SCORES, new MenuCommand() {
+        menuCommands.put(GameConstants.MENU_HIGH_SCORES, new MenuCommandInterface() {
             public boolean execute(GameManager manager) {
-                manager.scoreManager.displayHighScores();
+                manager.scoreManager.showHighScores();
                 return true;
             }
         });
 
-        menuCommands.put(GameConstants.MENU_RULES, new MenuCommand() {
+        menuCommands.put(GameConstants.MENU_RULES, new MenuCommandInterface() {
             public boolean execute(GameManager manager) {
                 manager.menuManager.displayRules();
                 return true;
             }
         });
 
-        menuCommands.put(GameConstants.MENU_INSPIRATION, new MenuCommand() {
+        menuCommands.put(GameConstants.MENU_INSPIRATION, new MenuCommandInterface() {
             public boolean execute(GameManager manager) {
                 manager.menuManager.displayInspiration();
                 return true;
@@ -60,7 +60,7 @@ public class GameManager {
     }
 
     private boolean handleMenuChoice(int choice) {
-        MenuCommand command = menuCommands.get(choice);
+        MenuCommandInterface command = menuCommands.get(choice);
         if (command != null) {
             return command.execute(this);
         }

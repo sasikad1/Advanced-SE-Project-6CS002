@@ -7,23 +7,23 @@ import java.net.*;
  */
 
 public final class IOLibrary {
-   public static String getString() {
-    BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+   public static String readInputLine() {
+    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     do {
       try {
-        return r.readLine();
+        return reader.readLine();
       } catch (Exception e) {
       }
     } while (true);
   }
 
-  public static InetAddress getIPAddress() {
-    BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+  public static InetAddress readIPAddress() {
+    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     do {
       try {
-        String[] chunks = r.readLine().split("\\.");
-        byte[] data = { Byte.parseByte(chunks[0]),Byte.parseByte(chunks[1]),Byte.parseByte(chunks[2]),Byte.parseByte(chunks[3])};
-        return Inet4Address.getByAddress(data);
+        String[] ipParts = reader.readLine().split("\\.");
+        byte[] ipBytes = { Byte.parseByte(ipParts[0]),Byte.parseByte(ipParts[1]),Byte.parseByte(ipParts[2]),Byte.parseByte(ipParts[3])};
+        return Inet4Address.getByAddress(ipBytes);
       } catch (Exception e) {
       }
     } while (true);

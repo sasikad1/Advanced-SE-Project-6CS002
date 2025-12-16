@@ -6,8 +6,8 @@ import java.util.Map;
 import javax.swing.*;
 
 public class PictureFrame {
-  public int[] reroll = null;
-  public GameEngine master = null;
+  public int[] rerollValues = null;
+  public GameEngine gameEngine = null;
 
   // Inner interface for rendering strategies - ඉහලට ගෙනියන්න
   interface RenderStrategy {
@@ -32,7 +32,7 @@ public class PictureFrame {
           l.drawGridLines(g);
           drawHeadings(g);
           drawGrid(g);
-          master.drawDominoes(g);
+          gameEngine.drawDominoes(g);
         }
       });
 
@@ -42,43 +42,43 @@ public class PictureFrame {
           l.drawGridLines(g);
           drawHeadings(g);
           drawGrid(g);
-          master.drawGuesses(g);
+          gameEngine.drawGuesses(g);
         }
       });
     }
 
     public void drawGrid(Graphics g) {
-      for (int are = 0; are < 7; are++) {
-        for (int see = 0; see < 8; see++) {
-          drawDigitGivenCentre(g, 30 + see * 20, 30 + are * 20, 20,
-                  master.getGameState().getGrid()[are][see]);
+      for (int row = 0; row < 7; row++) {
+        for (int column = 0; column < 8; column++) {
+          drawDigitGivenCentre(g, 30 + column * 20, 30 + row * 20, 20,
+                  gameEngine.getGameState().getGrid()[row][column]);
         }
       }
     }
 
     public void drawHeadings(Graphics g) {
-      for (int are = 0; are < 7; are++) {
-        fillDigitGivenCentre(g, 10, 30 + are * 20, 20, are + 1);
+      for (int row = 0; row < 7; row++) {
+        fillDigitGivenCentre(g, 10, 30 + row * 20, 20, row + 1);
       }
 
-      for (int see = 0; see < 8; see++) {
-        fillDigitGivenCentre(g, 30 + see * 20, 10, 20, see + 1);
+      for (int column = 0; column < 8; column++) {
+        fillDigitGivenCentre(g, 30 + column * 20, 10, 20, column + 1);
       }
     }
 
     public void drawDomino(Graphics g, Domino d) {
       if (d.placed) {
-        int y = Math.min(d.ly, d.hy);
-        int x = Math.min(d.lx, d.hx);
-        int w = Math.abs(d.lx - d.hx) + 1;
-        int h = Math.abs(d.ly - d.hy) + 1;
+        int y = Math.min(d.lowValueY, d.highValueY);
+        int x = Math.min(d.lowValueX, d.highValueX);
+        int w = Math.abs(d.lowValueX - d.highValueX) + 1;
+        int h = Math.abs(d.lowValueY - d.highValueY) + 1;
         g.setColor(Color.WHITE);
         g.fillRect(20 + x * 20, 20 + y * 20, w * 20, h * 20);
         g.setColor(Color.RED);
         g.drawRect(20 + x * 20, 20 + y * 20, w * 20, h * 20);
-        drawDigitGivenCentre(g, 30 + d.hx * 20, 30 + d.hy * 20, 20, d.high,
+        drawDigitGivenCentre(g, 30 + d.highValueX * 20, 30 + d.highValueY * 20, 20, d.highValue,
                 Color.BLUE);
-        drawDigitGivenCentre(g, 30 + d.lx * 20, 30 + d.ly * 20, 20, d.low,
+        drawDigitGivenCentre(g, 30 + d.lowValueX * 20, 30 + d.lowValueY * 20, 20, d.lowValue,
                 Color.BLUE);
       }
     }
@@ -115,8 +115,8 @@ public class PictureFrame {
       g.setColor(Color.YELLOW);
       g.fillRect(0, 0, getWidth(), getHeight());
 
-      if (master != null) {
-        RenderStrategy strategy = renderStrategies.get(master.getGameState().getMode());
+      if (gameEngine != null) {
+        RenderStrategy strategy = renderStrategies.get(gameEngine.getGameState().getMode());
         if (strategy != null) {
           strategy.render(g);
         } else {
@@ -136,8 +136,8 @@ public class PictureFrame {
 
   public DominoPanel dp;
 
-  public void PictureFrame(GameEngine sf) {
-    master = sf;
+  public void PictureFrame(GameEngine gameEngine) {
+    this.gameEngine = gameEngine;
     if (dp == null) {
       JFrame f = new JFrame("Abominodo");
       dp = new DominoPanel();

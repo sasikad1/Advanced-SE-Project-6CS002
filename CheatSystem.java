@@ -6,7 +6,7 @@ public class CheatSystem {
     private GameEngine gameEngine;
     private MenuManager menuManager;
     private IOSpecialist io;
-    private Map<Integer, CheatCommand> cheatCommands;
+    private Map<Integer, CheatCommandInterface> cheatCommands;
 
     public CheatSystem(GameEngine gameEngine, IOSpecialist io) {
         this.gameEngine = gameEngine;
@@ -19,31 +19,31 @@ public class CheatSystem {
         cheatCommands = new HashMap<>();
 
         // Cheat Menu Commands
-        cheatCommands.put(GameConstants.CHEAT_CHANGE_MIND, new CheatCommand() {
+        cheatCommands.put(GameConstants.CHEAT_CHANGE_MIND, new CheatCommandInterface() {
             public void execute(CheatSystem system) {
                 system.handleChangedMind();
             }
         });
 
-        cheatCommands.put(GameConstants.CHEAT_FIND_DOMINO, new CheatCommand() {
+        cheatCommands.put(GameConstants.CHEAT_FIND_DOMINO, new CheatCommandInterface() {
             public void execute(CheatSystem system) {
                 system.handleFindDomino();
             }
         });
 
-        cheatCommands.put(GameConstants.CHEAT_FIND_LOCATION, new CheatCommand() {
+        cheatCommands.put(GameConstants.CHEAT_FIND_LOCATION, new CheatCommandInterface() {
             public void execute(CheatSystem system) {
                 system.handleFindLocation();
             }
         });
 
-        cheatCommands.put(GameConstants.CHEAT_FIND_CERTAINTIES, new CheatCommand() {
+        cheatCommands.put(GameConstants.CHEAT_FIND_CERTAINTIES, new CheatCommandInterface() {
             public void execute(CheatSystem system) {
                 system.handleFindCertainties();
             }
         });
 
-        cheatCommands.put(GameConstants.CHEAT_FIND_POSSIBILITIES, new CheatCommand() {
+        cheatCommands.put(GameConstants.CHEAT_FIND_POSSIBILITIES, new CheatCommandInterface() {
             public void execute(CheatSystem system) {
                 system.handleFindPossibilities();
             }
@@ -57,7 +57,7 @@ public class CheatSystem {
     }
 
     private void handleCheatChoice(int choice) {
-        CheatCommand command = cheatCommands.get(choice);
+        CheatCommandInterface command = cheatCommands.get(choice);
         if (command != null) {
             command.execute(this);
         } else {
@@ -174,7 +174,7 @@ public class CheatSystem {
             if (locations.size() == 1) {
                 Domino domino = entry.getKey();
                 Location location = locations.get(0);
-                System.out.printf("[%d%d]", domino.high, domino.low);
+                System.out.printf("[%d%d]", domino.highValue, domino.lowValue);
                 System.out.println(location);
             }
         }
@@ -184,7 +184,7 @@ public class CheatSystem {
         for (Map.Entry<Domino, List<Location>> entry : map.entrySet()) {
             Domino domino = entry.getKey();
             List<Location> locations = entry.getValue();
-            System.out.printf("[%d%d]", domino.high, domino.low);
+            System.out.printf("[%d%d]", domino.highValue, domino.lowValue);
             for (Location location : locations) {
                 System.out.print(location);
             }

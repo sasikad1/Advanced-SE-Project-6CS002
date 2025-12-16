@@ -7,9 +7,9 @@ import java.util.Map;
 
 public class DominoFinder {
 
-    public static Domino findDominoAt(List<Domino> dominoes, int x, int y) {
+    public static Domino findDominoAt(List<Domino> dominoes, int xPosition, int yPosition) {
         for (Domino d : dominoes) {
-            if ((d.lx == x && d.ly == y) || (d.hx == x && d.hy == y)) {
+            if ((d.lowValueX == xPosition && d.lowValueY == yPosition) || (d.highValueX == xPosition && d.highValueY == yPosition)) {
                 return d;
             }
         }
@@ -17,10 +17,10 @@ public class DominoFinder {
     }
 
     public static Domino findDominoByValues(List<Domino> dominoes, int value1, int value2) {
-        for (Domino d : dominoes) {
-            if ((d.low == value1 && d.high == value2) ||
-                    (d.high == value1 && d.low == value2)) {
-                return d;
+        for (Domino domino : dominoes) {
+            if ((domino.lowValue == value1 && domino.highValue == value2) ||
+                    (domino.highValue == value1 && domino.lowValue == value2)) {
+                return domino;
             }
         }
         return null;
@@ -30,13 +30,13 @@ public class DominoFinder {
                                                                 int[][] grid) {
         Map<Domino, List<Location>> map = new HashMap<>();
 
-        for (int r = 0; r < GameConstants.GRID_LAST_ROW; r++) {
-            for (int c = 0; c < GameConstants.GRID_LAST_COL; c++) {
-                Domino hd = findDominoByValues(guessDominoes, grid[r][c], grid[r][c + 1]);
-                Domino vd = findDominoByValues(guessDominoes, grid[r][c], grid[r + 1][c]);
+        for (int row = 0; row < GameConstants.GRID_LAST_ROW; row++) {
+            for (int column = 0; column < GameConstants.GRID_LAST_COL; column++) {
+                Domino horizontalDomino = findDominoByValues(guessDominoes, grid[row][column], grid[row][column + 1]);
+                Domino verticalDomino = findDominoByValues(guessDominoes, grid[row][column], grid[row + 1][column]);
 
-                addToMap(map, hd, new Location(r, c, Location.DIRECTION.HORIZONTAL));
-                addToMap(map, vd, new Location(r, c, Location.DIRECTION.VERTICAL));
+                addToMap(map, horizontalDomino, new Location(row, column, Location.DIRECTION.HORIZONTAL));
+                addToMap(map, verticalDomino, new Location(row, column, Location.DIRECTION.VERTICAL));
             }
         }
         return map;

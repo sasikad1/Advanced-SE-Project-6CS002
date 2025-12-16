@@ -7,14 +7,14 @@ public class GridManager {
     private int[][] guessGrid;
 
     public GridManager() {
-        grid = new int[GameConstants.GRID_ROWS][GameConstants.GRID_COLS];
-        guessGrid = new int[GameConstants.GRID_ROWS][GameConstants.GRID_COLS];
+        grid = new int[GameConstants.GRID_ROWS][GameConstants.GRID_COLUMNS];
+        guessGrid = new int[GameConstants.GRID_ROWS][GameConstants.GRID_COLUMNS];
         initializeGrids();
     }
 
     private void initializeGrids() {
         for (int r = 0; r < GameConstants.GRID_ROWS; r++) {
-            for (int c = 0; c < GameConstants.GRID_COLS; c++) {
+            for (int c = 0; c < GameConstants.GRID_COLUMNS; c++) {
                 grid[r][c] = GameConstants.EMPTY_CELL;
                 guessGrid[r][c] = GameConstants.EMPTY_CELL;
             }
@@ -23,10 +23,10 @@ public class GridManager {
 
     public void collateGrid(List<Domino> dominoes) {
         initializeGrid();
-        for (Domino d : dominoes) {
-            if (d.placed) {
-                grid[d.hy][d.hx] = d.high;
-                grid[d.ly][d.lx] = d.low;
+        for (Domino domino : dominoes) {
+            if (domino.placed) {
+                grid[domino.highValueY][domino.highValueX] = domino.highValue;
+                grid[domino.lowValueY][domino.lowValueX] = domino.lowValue;
             }
         }
     }
@@ -35,8 +35,8 @@ public class GridManager {
         initializeGuessGrid();
         for (Domino d : guesses) {
             if (d.placed) {
-                guessGrid[d.hy][d.hx] = d.high;
-                guessGrid[d.ly][d.lx] = d.low;
+                guessGrid[d.highValueY][d.highValueX] = d.highValue;
+                guessGrid[d.lowValueY][d.lowValueX] = d.lowValue;
             }
         }
     }
@@ -54,7 +54,7 @@ public class GridManager {
     }
 
     public boolean isValidPosition(int x, int y) {
-        return x >= 0 && x < GameConstants.GRID_COLS &&
+        return x >= 0 && x < GameConstants.GRID_COLUMNS &&
                 y >= 0 && y < GameConstants.GRID_ROWS;
     }
 
@@ -63,19 +63,19 @@ public class GridManager {
         return targetGrid[y][x] == GameConstants.EMPTY_CELL;
     }
 
-    public boolean canPlaceDomino(int x1, int y1, int x2, int y2) {
-        return isValidPosition(x1, y1) && isValidPosition(x2, y2) &&
-                isPositionEmpty(x1, y1, true) && isPositionEmpty(x2, y2, true);
+    public boolean canPlaceDomino(int xPosition1, int yPosition1, int xPosition2, int yPosition2) {
+        return isValidPosition(xPosition1, yPosition1) && isValidPosition(xPosition2, yPosition2) &&
+                isPositionEmpty(xPosition1, yPosition1, true) && isPositionEmpty(xPosition2, yPosition2, true);
     }
 
-    public void placeDominoInGuessGrid(Domino domino, int x1, int y1, int x2, int y2) {
-        guessGrid[y1][x1] = domino.high;
-        guessGrid[y2][x2] = domino.low;
+    public void placeDominoInGuessGrid(Domino domino, int xPosition1, int yPosition1, int xPosition2, int yPosition2) {
+        guessGrid[yPosition1][xPosition1] = domino.highValue;
+        guessGrid[yPosition2][xPosition2] = domino.lowValue;
     }
 
     public void removeDominoFromGuessGrid(Domino domino) {
-        guessGrid[domino.hy][domino.hx] = GameConstants.EMPTY_CELL;
-        guessGrid[domino.ly][domino.lx] = GameConstants.EMPTY_CELL;
+        guessGrid[domino.highValueY][domino.highValueX] = GameConstants.EMPTY_CELL;
+        guessGrid[domino.lowValueY][domino.lowValueX] = GameConstants.EMPTY_CELL;
     }
 
     public int getGridValue(int x, int y, boolean fromGuessGrid) {
@@ -87,17 +87,17 @@ public class GridManager {
     public int[][] getGuessGrid() { return guessGrid; }
 
     private void initializeGrid() {
-        for (int r = 0; r < GameConstants.GRID_ROWS; r++) {
-            for (int c = 0; c < GameConstants.GRID_COLS; c++) {
-                grid[r][c] = GameConstants.EMPTY_CELL;
+        for (int row = 0; row < GameConstants.GRID_ROWS; row++) {
+            for (int column = 0; column < GameConstants.GRID_COLUMNS; column++) {
+                grid[row][column] = GameConstants.EMPTY_CELL;
             }
         }
     }
 
     private void initializeGuessGrid() {
-        for (int r = 0; r < GameConstants.GRID_ROWS; r++) {
-            for (int c = 0; c < GameConstants.GRID_COLS; c++) {
-                guessGrid[r][c] = GameConstants.EMPTY_CELL;
+        for (int row = 0; row < GameConstants.GRID_ROWS; row++) {
+            for (int column = 0; column < GameConstants.GRID_COLUMNS; column++) {
+                guessGrid[row][column] = GameConstants.EMPTY_CELL;
             }
         }
     }

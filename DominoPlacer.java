@@ -9,12 +9,12 @@ public class DominoPlacer {
         this.gridManager = gridManager;
     }
 
-    public boolean placeDomino(int x1, int y1, boolean horizontal, Domino domino) {
-        if (!isValidPlacement(x1, y1, horizontal)) {
+    public boolean placeDomino(int startX, int startY, boolean horizontal, Domino domino) {
+        if (!isValidPlacement(startX, startY, horizontal)) {
             return false;
         }
 
-        Position position = calculatePosition(x1, y1, horizontal);
+        Position position = calculatePosition(startX, startY, horizontal);
         domino.place(position.x1, position.y1, position.x2, position.y2);
         updateGameState(domino, position);
         return true;
@@ -57,7 +57,7 @@ public class DominoPlacer {
 
     private Domino findDominoAt(int x, int y) {
         return gameState.getGuesses().stream()
-                .filter(d -> (d.lx == x && d.ly == y) || (d.hx == x && d.hy == y))
+                .filter(domino -> (domino.lowValueX == x && domino.lowValueY == y) || (domino.highValueX == x && domino.highValueY == y))
                 .findFirst()
                 .orElse(null);
     }

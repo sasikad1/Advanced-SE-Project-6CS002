@@ -12,7 +12,7 @@ public class InputValidator {
             try {
                 String input = io.getString();
                 value = Integer.parseInt(input);
-            } catch (Exception e) {
+            } catch (Exception exception) {
                 value = GameConstants.INVALID_CHOICE;
             }
         }
@@ -21,14 +21,14 @@ public class InputValidator {
 
     public static int[] getValidatedCoordinates(IOSpecialist io) {
         System.out.println("Column?");
-        int x = getValidatedInt(io, GameConstants.MIN_COLUMN,
+        int column = getValidatedInt(io, GameConstants.MIN_COLUMN,
                 GameConstants.MAX_COLUMN, null);
 
         System.out.println("Row?");
-        int y = getValidatedInt(io, GameConstants.MIN_ROW,
+        int row = getValidatedInt(io, GameConstants.MIN_ROW,
                 GameConstants.MAX_ROW, null);
 
-        return new int[]{x - 1, y - 1}; // Convert to 0-based
+        return new int[]{column - 1, row - 1}; // Convert to 0-based
     }
 
     public static boolean getYesNoResponse(IOSpecialist io, String prompt) {
