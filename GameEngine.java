@@ -23,68 +23,38 @@ public class GameEngine {
         this.dominoPlacer = new DominoPlacer(gameState, gridManager);
         this.cheatSystem = new CheatSystem(this, inputHandler);
         this.pictureFrame = new PictureFrame();
-        initializePlayCommands();
     }
 
-    private void initializePlayCommands() {
-        playCommands = new HashMap<>();
+    public GameInitializer getGameInitializer() {
+        return gameInitializer;
+    }
 
-        // Play Menu Commands
-        playCommands.put(GameConstants.PLAY_GIVE_UP, new PlayMenuCommandInterface() {
-            public boolean execute(GameEngine gameEngine) {
-                return false; // Give up - stop playing
-            }
-        });
+    public DominoPlacer getDominoPlacer() {
+        return dominoPlacer;
+    }
 
-        playCommands.put(GameConstants.PLAY_PLACE_DOMINO, new PlayMenuCommandInterface() {
-            public boolean execute(GameEngine gameEngine) {
-                return gameEngine.handlePlaceDomino();
-            }
-        });
+    public CheatSystem getCheatSystem() {
+        return cheatSystem;
+    }
 
-        playCommands.put(GameConstants.PLAY_UNPLACE_DOMINO, new PlayMenuCommandInterface() {
-            public boolean execute(GameEngine gameEngine) {
-                return gameEngine.handleUnplaceDomino();
-            }
-        });
+    public PictureFrame getPictureFrame() {
+        return pictureFrame;
+    }
 
-        playCommands.put(GameConstants.PLAY_PRINT_GRID, new PlayMenuCommandInterface() {
-            public boolean execute(GameEngine gameEngine) {
-                gameEngine.gridManager.printMainGrid();
-                return true;
-            }
-        });
+    public GridManager getGridManager() {
+        return gridManager;
+    }
 
-        playCommands.put(GameConstants.PLAY_PRINT_BOX, new PlayMenuCommandInterface() {
-            public boolean execute(GameEngine gameEngine) {
-                gameEngine.gridManager.printGuessGrid();
-                return true;
-            }
-        });
+    public DominoManager getDominoManager() {
+        return dominoManager;
+    }
 
-        playCommands.put(GameConstants.PLAY_PRINT_DOMINOES, new PlayMenuCommandInterface() {
-            public boolean execute(GameEngine gameEngine) {
-                gameEngine.printGuesses();
-                return true;
-            }
-        });
+    public IOSpecialist getIo() {
+        return io;
+    }
 
-        playCommands.put(GameConstants.PLAY_CHECK_SCORE, new PlayMenuCommandInterface() {
-            public boolean execute(GameEngine gameEngine) {
-                new ScoreManager().displayScore(
-                        gameEngine.gameState.getPlayerName(),
-                        gameEngine.gameState.getScore()
-                );
-                return true;
-            }
-        });
-
-        playCommands.put(GameConstants.PLAY_ASSISTANCE, new PlayMenuCommandInterface() {
-            public boolean execute(GameEngine gameEngine) {
-                gameEngine.cheatSystem.handleCheatMenu();
-                return true;
-            }
-        });
+    public Map<Integer, PlayMenuCommandInterface> getPlayCommands() {
+        return playCommands;
     }
 
     public void initializeGame(int difficulty) {
@@ -106,15 +76,12 @@ public class GameEngine {
     }
 
     private boolean handlePlayMenuChoice(int choice) {
-        PlayMenuCommandInterface command = playCommands.get(choice);
-        if (command != null) {
-            return command.execute(this);
-        }
-        System.out.println("Invalid play menu choice");
-        return true;
+        // Use Command Factory to create command
+        PlayMenuCommandInterface command = CommandFactory.createPlayCommand(choice);
+        return command.execute(this);
     }
 
-    private boolean handlePlaceDomino() {
+    public boolean handlePlaceDomino() {
         System.out.println("Where will the top left of the domino be?");
         int[] coords = InputValidator.getValidatedCoordinates(io);
         boolean horizontal = InputValidator.getYesNoResponse(io, "Horizontal or Vertical (H or V)?");
@@ -134,7 +101,7 @@ public class GameEngine {
         return true;
     }
 
-    private boolean handleUnplaceDomino() {
+    public boolean handleUnplaceDomino() {
         System.out.println("Enter a position that the domino occupies");
         int[] coords = InputValidator.getValidatedCoordinates(io);
 
@@ -147,7 +114,7 @@ public class GameEngine {
         return true;
     }
 
-    private Domino getSelectedDomino(int[] coords, boolean horizontal) {
+    public Domino getSelectedDomino(int[] coords, boolean horizontal) {
         int x = coords[0];
         int y = coords[1];
         int x2 = horizontal ? x + 1 : x;
@@ -172,8 +139,7 @@ public class GameEngine {
         System.out.println("you scored " + gameState.getScore());
     }
 
-    // Helper methods for displaying
-    private void printGuesses() {
+    public void printGuesses() {
         if (gameState.getGuesses() != null) {
             java.util.Collections.sort(gameState.getGuesses());
             for (Domino d : gameState.getGuesses()) {

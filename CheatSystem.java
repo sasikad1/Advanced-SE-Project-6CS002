@@ -12,7 +12,6 @@ public class CheatSystem {
         this.gameEngine = gameEngine;
         this.io = io;
         this.menuManager = new MenuManager(io);
-        initializeCheatCommands();
     }
 
     private void initializeCheatCommands() {
@@ -57,15 +56,12 @@ public class CheatSystem {
     }
 
     private void handleCheatChoice(int choice) {
-        CheatCommandInterface command = cheatCommands.get(choice);
-        if (command != null) {
-            command.execute(this);
-        } else {
-            System.out.println("Invalid cheat choice");
-        }
+        // Use Command Factory to create command
+        CheatCommandInterface command = CommandFactory.createCheatCommand(choice);
+        command.execute(this);
     }
 
-    private void handleChangedMind() {
+    public void handleChangedMind() {
         GameState state = gameEngine.getGameState();
         int cheatFlag = state.getCheatFlag();
 
@@ -98,7 +94,7 @@ public class CheatSystem {
         }
     }
 
-    private void handleFindDomino() {
+    public void handleFindDomino() {
         GameState state = gameEngine.getGameState();
         state.addToScore(-GameConstants.CHEAT_COST);
 
@@ -113,7 +109,7 @@ public class CheatSystem {
         System.out.println(domino != null ? domino : "Domino not found");
     }
 
-    private void handleFindLocation() {
+    public void handleFindLocation() {
         GameState state = gameEngine.getGameState();
         state.addToScore(-GameConstants.CHEAT_COST);
 
@@ -124,7 +120,7 @@ public class CheatSystem {
         System.out.println(domino != null ? domino : "No domino at that location");
     }
 
-    private void handleFindCertainties() {
+    public void handleFindCertainties() {
         GameState state = gameEngine.getGameState();
         state.addToScore(-GameConstants.CERTAINTIES_COST);
 
@@ -132,7 +128,7 @@ public class CheatSystem {
         printCertainties(locationMap);
     }
 
-    private void handleFindPossibilities() {
+    public void handleFindPossibilities() {
         GameState state = gameEngine.getGameState();
         state.addToScore(-GameConstants.POSSIBILITIES_COST);
 
@@ -140,7 +136,7 @@ public class CheatSystem {
         printPossibilities(locationMap);
     }
 
-    private Map<Domino, List<Location>> createLocationMap() {
+    public Map<Domino, List<Location>> createLocationMap() {
         Map<Domino, List<Location>> map = new HashMap<>();
         GameState state = gameEngine.getGameState();
         int[][] grid = state.getGrid();
@@ -157,7 +153,7 @@ public class CheatSystem {
         return map;
     }
 
-    private void addToMap(Map<Domino, List<Location>> map, Domino domino, Location location) {
+    public void addToMap(Map<Domino, List<Location>> map, Domino domino, Location location) {
         if (domino == null) return;
 
         List<Location> locations = map.get(domino);
@@ -168,7 +164,7 @@ public class CheatSystem {
         locations.add(location);
     }
 
-    private void printCertainties(Map<Domino, List<Location>> map) {
+    public void printCertainties(Map<Domino, List<Location>> map) {
         for (Map.Entry<Domino, List<Location>> entry : map.entrySet()) {
             List<Location> locations = entry.getValue();
             if (locations.size() == 1) {
@@ -180,7 +176,7 @@ public class CheatSystem {
         }
     }
 
-    private void printPossibilities(Map<Domino, List<Location>> map) {
+    public void printPossibilities(Map<Domino, List<Location>> map) {
         for (Map.Entry<Domino, List<Location>> entry : map.entrySet()) {
             Domino domino = entry.getKey();
             List<Location> locations = entry.getValue();

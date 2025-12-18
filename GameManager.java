@@ -16,8 +16,21 @@ public class GameManager {
         this.gameEngine = new GameEngine(inputHandler);
         this.menuManager = new MenuManager(inputHandler);
         this.scoreManager = new ScoreManager();
-        initializeMenuCommands();
     }
+
+    // Add getter methods for command classes
+    public ScoreManager getScoreManager() {
+        return scoreManager;
+    }
+
+    public MenuManager getMenuManager() {
+        return menuManager;
+    }
+
+    public GameEngine getGameEngine() {
+        return gameEngine;
+    }
+
 
     private void initializeMenuCommands() {
         menuCommands = new HashMap<>();
@@ -60,12 +73,9 @@ public class GameManager {
     }
 
     private boolean handleMenuChoice(int choice) {
-        MenuCommandInterface command = menuCommands.get(choice);
-        if (command != null) {
-            return command.execute(this);
-        }
-        System.out.println("Invalid choice. Please try again.");
-        return true;
+        // Use Command Factory to create command
+        MenuCommandInterface command = CommandFactory.createMenuCommand(choice);
+        return command.execute(this);
     }
 
     // Rest of the existing code remains the same...
@@ -90,7 +100,7 @@ public class GameManager {
         System.out.println();
     }
 
-    private void handleQuit() {
+    public void handleQuit() {
         GameState state = gameEngine.getGameState();
         if (state.getDominoes() == null) {
             System.out.println("It is a shame that you did not want to play");
@@ -100,7 +110,7 @@ public class GameManager {
         System.exit(0);
     }
 
-    private void handlePlayGame() {
+    public void handlePlayGame() {
         menuManager.displayDifficultyMenu();
         int difficulty = menuManager.getDifficultyChoice();
         gameEngine.initializeGame(difficulty);
