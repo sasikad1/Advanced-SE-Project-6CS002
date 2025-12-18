@@ -10,12 +10,27 @@ public class GameManager {
     private ScoreManager scoreManager;
     private IOSpecialist io;
     private Map<Integer, MenuCommandInterface> menuCommands;
+    private ConsoleDisplay consoleDisplay; // New observer
 
     public GameManager(IOSpecialist inputHandler) {
         this.io = inputHandler;
         this.gameEngine = new GameEngine(inputHandler);
         this.menuManager = new MenuManager(inputHandler);
         this.scoreManager = new ScoreManager();
+        this.consoleDisplay = new ConsoleDisplay();
+
+        // Register observers
+        setupObservers();
+    }
+
+    private void setupObservers() {
+        // PictureFrame will register itself when created
+        // Register console display
+        gameEngine.addObserver(consoleDisplay);
+
+        // You can add more observers here
+        // gameEngine.addObserver(new ScoreDisplay());
+        // gameEngine.addObserver(new GameLogger());
     }
 
     // Add getter methods for command classes

@@ -3,7 +3,7 @@ package base;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GameEngine {
+public class GameEngine extends Subject {
     private GameState gameState;
     private GameInitializer gameInitializer;
     private DominoPlacer dominoPlacer;
@@ -24,6 +24,11 @@ public class GameEngine {
         this.cheatSystem = new CheatSystem(this, inputHandler);
         this.pictureFrame = new PictureFrame();
     }
+    private void notifyGameStateChanged() {
+        notifyObservers(gameState);
+    }
+
+
 
     public GameInitializer getGameInitializer() {
         return gameInitializer;
@@ -98,6 +103,7 @@ public class GameEngine {
         }
 
         updateGUI();
+        notifyGameStateChanged(); // Observer pattern
         return true;
     }
 
@@ -111,7 +117,13 @@ public class GameEngine {
         }
 
         updateGUI();
+        notifyGameStateChanged(); // Observer pattern
         return true;
+    }
+
+    public void addToScore(int points) {
+        gameState.addToScore(points);
+        notifyGameStateChanged();
     }
 
     public Domino getSelectedDomino(int[] coords, boolean horizontal) {
@@ -159,7 +171,7 @@ public class GameEngine {
 
     // GUI methods
     private void initializeGUI() {
-        pictureFrame.PictureFrame(this);
+        pictureFrame.initializePictureFrame(this); // Updated call
         updateGUI();
     }
 

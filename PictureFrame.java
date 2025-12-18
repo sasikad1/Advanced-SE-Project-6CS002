@@ -1,13 +1,36 @@
 package base;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
-import javax.swing.*;
 
-public class PictureFrame {
+public class PictureFrame implements Observer {
   public int[] rerollValues = null;
   public GameEngine gameEngine = null;
+  public DominoPanel dp;
+
+  public void initializePictureFrame(GameEngine gameEngine) {
+    this.gameEngine = gameEngine;
+    if (dp == null) {
+      JFrame f = new JFrame("Abominodo");
+      dp = new DominoPanel();
+      f.setContentPane(dp);
+      f.pack();
+      f.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+      f.setVisible(true);
+    }
+
+    // Register as observer
+    gameEngine.addObserver(this);
+  }
+
+  @Override
+  public void update(GameState gameState) {
+    if (dp != null) {
+      dp.repaint();
+    }
+  }
 
   // Inner interface for rendering strategies - ඉහලට ගෙනියන්න
   interface RenderStrategy {
@@ -134,18 +157,8 @@ public class PictureFrame {
     }
   }
 
-  public DominoPanel dp;
-
   public void PictureFrame(GameEngine gameEngine) {
-    this.gameEngine = gameEngine;
-    if (dp == null) {
-      JFrame f = new JFrame("Abominodo");
-      dp = new DominoPanel();
-      f.setContentPane(dp);
-      f.pack();
-      f.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-      f.setVisible(true);
-    }
+    initializePictureFrame(gameEngine);
   }
 
   public void reset() {
